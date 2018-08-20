@@ -1,0 +1,21 @@
+#http://yaml.org/spec/1.2/spec.html#Preview
+# key value mapping server ssh to commands to do
+
+
+-
+  host: "user@localhost"
+  commands:
+    - "ls"
+    - "pwd"
+    - "make test"
+  cd: "somedirectory"
+  # you call shell scripts
+
+-
+  host: "-t -p 2022 virtalenv@somehosting"
+  commands:
+    - "bash -l script-using-virtualenv"
+  cd: ""
+  # bash -l lauches a login shell and bla bla bla aand i want some virtualenv to be done
+  #
+
