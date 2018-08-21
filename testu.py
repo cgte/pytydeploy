@@ -80,7 +80,7 @@ class SimpleTest(unittest.TestCase):
                           'ssh but cd there ; install'])
         os.remove(f.name)
 
-    def test_tunnig_lastcommand(self):
+    def test_tuning_lastcommand(self):
         buckets = [{'cd': 'nevergohere',
                     'commands': ['ls', 'foo'],
                     'host': 'yazoo@dontgo'},
@@ -94,6 +94,20 @@ class SimpleTest(unittest.TestCase):
                          ['ssh dogo cd there ; gottafixthis'])
         os.remove(f.name)
 
+    def test_tuning_lastcommand(self):
+        buckets = [{'cd': 'stack',
+                    'commands': ['head', 'configfile'],
+                    'host': 'i@thinkbackwards'},
+                   {'cd': 'icopy',
+                    'commands': ['getinspration', 'laizyness'],
+                    'host': 'dogo'},
+                    ]
+        f = buckets2file(buckets)
+        commands = pytymain(f.name, dry_run=True, lastcommand=True,
+                            reverse=True)
+        self.assertEqual(commands,
+                         ['ssh i@thinkbackwards cd stack ; configfile'])
+        os.remove(f.name)
 
 if __name__ == '__main__':
     unittest.main()

@@ -37,8 +37,10 @@ def command_buckets(targets):
 
 
 
-def main(filepath=None, dry_run=True, lastcommand=False, lasthost=False):
-    targets = yamlpath2dict(filepath)
+def main(filepath=None, dry_run=True, lastcommand=False, lasthost=False,
+         reverse=False):
+
+    targets = yamlpath2dict(filepath)[:: -1 if reverse else 1]
     if lasthost or lastcommand:
         targets = targets[-1:]
     commands = command_buckets(targets)
@@ -66,6 +68,8 @@ if __name__ == '__main__':
     parser.add_argument('--lasthost', action='store_const', default=False,
                         const=True,
                         help='Only run commands for the last host, mostly for tuning')
+    parser.add_argument('--reverse', '-r', action='store_const', default=False,
+                        const=True, help="Reverses the target list. but not commands")
 
     args = parser.parse_args()
     main(**args.__dict__)
