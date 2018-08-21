@@ -37,9 +37,13 @@ def command_buckets(targets):
 
 
 
-def main(filepath=None, dry_run=True):
+def main(filepath=None, dry_run=True, lastcommand=False, lasthost=False):
     targets = yamlpath2dict(filepath)
+    if lasthost or lastcommand:
+        targets = targets[-1:]
     commands = command_buckets(targets)
+    if lastcommand:
+        commands = commands[-1:]
     for command in commands:
         print(command)
         if not dry_run:
@@ -56,5 +60,12 @@ if __name__ == '__main__':
                         help="Only print what commands should be run")
     parser.add_argument('-f', '--file', dest='filepath', default='example.yaml',
                         help='The file to use')
+    parser.add_argument('--lastcommand', action='store_const', default=False,
+                        const=True,
+                        help='Only run the last command, mostly fo tuning')
+    parser.add_argument('--lasthost', action='store_const', default=False,
+                        const=True,
+                        help='Only run commands for the last host, mostly for tuning')
+
     args = parser.parse_args()
     main(**args.__dict__)

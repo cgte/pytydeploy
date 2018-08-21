@@ -1,10 +1,16 @@
 import unittest
+import os
 
 
 from tempfile import NamedTemporaryFile
 
 from pytydeploy import yamlpath2dict, command_buckets, main as pytymain
 
+def buckets2file(buckets):
+    import yaml
+    with NamedTemporaryFile(delete=False) as f:
+        f.file.write(yaml.dump(buckets).encode())
+    return f
 
 
 class SimpleTest(unittest.TestCase):
@@ -52,15 +58,40 @@ class SimpleTest(unittest.TestCase):
     def test_ls(self):
         """Hack to get proper coverage, if you don't specify a host runs local
         """
-        bucket = [{'cd': '',
+        buckets = [{'cd': '',
                    'commands': ['ls'],
                    'host': ''}]
-        import yaml
-        with NamedTemporaryFile(delete=False) as f:
-            f.file.write(yaml.dump(bucket).encode())
-
+        f = buckets2file(buckets)
         pytymain(f.name, False)
-        import os
+        os.remove(f.name)
+
+    def test_tuning_lasthost(self):
+        buckets = [{'cd': 'nevergohere',
+                    'commands': ['ls', 'foo'],
+                    'host': 'yazoo@dontgo'},
+                   {'cd': 'there',
+                    'commands': ['setup', 'install'],
+                    'host': 'but'},
+                    ]
+        f = buckets2file(buckets)
+        commands = pytymain(f.name, dry_run=True, lasthost=True)
+        self.assertEqual(commands,
+                         ['ssh but cd there ; setup',
+                          'ssh but cd there ; install'])
+        os.remove(f.name)
+
+    def test_tunnig_lastcommand(self):
+        buckets = [{'cd': 'nevergohere',
+                    'commands': ['ls', 'foo'],
+                    'host': 'yazoo@dontgo'},
+                   {'cd': 'there',
+                    'commands': ['alreadyworks', 'gottafixthis'],
+                    'host': 'dogo'},
+                    ]
+        f = buckets2file(buckets)
+        commands = pytymain(f.name, dry_run=True, lastcommand=True)
+        self.assertEqual(commands,
+                         ['ssh dogo cd there ; gottafixthis'])
         os.remove(f.name)
 
 
