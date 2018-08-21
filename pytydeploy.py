@@ -9,7 +9,7 @@ import yaml
 
 
 
-def frompath(path):
+def yamlpath2dict(path):
     with open(path, 'r') as f:
         content = f.read()
     return  yaml.load(content)
@@ -38,7 +38,7 @@ def command_buckets(targets):
 
 
 def main(filepath=None, dry_run=True):
-    targets = frompath(filepath)
+    targets = yamlpath2dict(filepath)
     commands = command_buckets(targets)
     for command in commands:
         print(command)

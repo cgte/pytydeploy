@@ -3,7 +3,7 @@ import unittest
 
 from tempfile import NamedTemporaryFile
 
-from pytydeploy import frompath, command_buckets, main as pytymain
+from pytydeploy import yamlpath2dict, command_buckets, main as pytymain
 
 
 
@@ -28,13 +28,13 @@ class SimpleTest(unittest.TestCase):
                         'commands': ['ls', 'foo'],
                         'host': 'user@host'}]
 
-    def test1_frompath(self):
+    def test1_yamlpath2dict(self):
 
-        self.assertEqual(frompath(self.path),
+        self.assertEqual(yamlpath2dict(self.path),
                          [{'cd': 'remote_directory',
                            'commands': ['ls', 'foo'],
                            'host': 'user@host'}])
-        self.assertEqual(frompath(self.path), self.buckets)
+        self.assertEqual(yamlpath2dict(self.path), self.buckets)
 
     def test_commands_building(self):
         self.assertEqual(command_buckets(self.buckets),
